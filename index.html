@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Physics</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <!-- Date + Clock -->
+    <div id="dateDisplay">—</div>
+    <div id="digitalTime" class="mono" aria-live="polite">--:--:--</div>
+
+    <hr class="rule" />
+
+    <div class="rows">
+      <!-- Row 1 -->
+      <div class="row">
+        <div class="cell">
+          <label for="teacher-input">Teacher:</label>
+          <input
+            type="text"
+            id="teacher-input"
+            placeholder="eg PHYS"
+            inputmode="latin"
+            maxlength="4"
+            aria-label="Teacher code (4 letters)"
+          />
+        </div>
+
+        <div class="cell right">
+          <label for="duration-input">Duration:</label>
+          <input
+            type="text"
+            id="duration-input"
+            placeholder="e.g., 1 hour 45 minutes"
+            aria-label="Duration"
+          />
+        </div>
+      </div>
+
+      <!-- Row 2 -->
+      <div class="row">
+        <div class="cell">
+          <label for="starts-input">Starts:</label>
+          <input
+            type="text"
+            id="starts-input"
+            placeholder="HH:MM"
+            inputmode="numeric"
+            class="mono"
+            aria-label="Start time (HH:MM)"
+          />
+        </div>
+
+        <div class="cell right">
+          <label>Ends:</label>
+          <span id="ends-display" class="mono">--:--</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Elements
+    const dateDisplay   = document.getElementById("dateDisplay");
+    const digitalTime   = document.getElementById("digitalTime");
+    const durationInput = document.getElementById("duration-input");
+    const startsInput   = document.getElementById("starts-input");
+    const endsDisplay   = document.getElementById("ends-display");
+    const teacherInput  = document.getElementById("teacher-input");
+
+    let intervalID = null;
+    let currentEndTime = null;
+
+    // Utils
+    const pad2 = n => String(n).padStart(2, "0");
+    const formatHMS = d => `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+    const formatHM  = d => `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+
+    const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    function formatDate(d){ return `${monthNames[d.getMonth()]} ${d.getDate()}`; }
+
+    // Parse duration into minutes (supports many formats)
+    function parseDurationToMinutes(input) {
+      if (!input) return NaN;
+      let s = String(input).trim().toLowerCase();
+      s = s.replace(/,/g, ".").replace(/\s+/g, " ");
+
+      let total = 0, matched = false;
+      const unitRe = /(\d+(?:\.\d+)?)\s*(hours?|hrs?|h|minutes?|mins?|min|m)\b/g;
+      let m;
+      while ((m = unitRe.exec(s)) !== null) {
+        const val = parseFloat(m[1]);
+        const unit = m[2];
+        if (/^h|hour/.test(unit)) total += val * 60;
+        else total += val;
+        matched = true;
+      }
+      if (!matched) {
+        const colon = s.match(/^(\d+):(\d{1,2})$/); // H:MM
+        if (colon) {
+          total += parseInt(colon[1],10) * 60 + parseInt(colon[2],10);
+          matched = true;
+        }
+      }
+      if (!matched) {
+        const numOnly = s.match(/^\d+(?:\.\d+)?$/); // bare minutes
+        if (numOnly) { total += parseFloat(numOnly[0]); matched = true; }
+      }
+      return matched ? Math.round(total) : NaN;
+    }
+
+    // Clock + date
+    function updateClock() {
+      const now = new Date();
+      digitalTime.textContent = formatHMS(now);
+      dateDisplay.textContent = formatDate(now);
+      if (currentEndTime) tickBackground(currentEndTime);
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Calculate end time
+    function calculateEnd() {
+      const [hh, mm] = (startsInput.value || "").split(":").map(s => s.trim());
+      const startH = Number(hh), startM = Number(mm);
+      const durationMins = parseDurationToMinutes(durationInput.value);
+
+      if (!isFinite(startH) || !isFinite(startM) || !isFinite(durationMins) || durationMins <= 0) {
+        endsDisplay.textContent = "--:--";
+        currentEndTime = null;
+        return;
+      }
+
+      const start = new Date();
+      start.setHours(startH, startM, 0, 0);
+
+      const end = new Date(start.getTime() + durationMins * 60000);
+      currentEndTime = end;
+      endsDisplay.textContent = formatHM(end);
+
+      if (intervalID) clearInterval(intervalID);
+      intervalID = setInterval(() => tickBackground(end), 1000);
+      tickBackground(end);
+    }
+
+    // Background color logic
+    function tickBackground(endTime) {
+      const now = new Date();
+      const diff = endTime - now;
+      if (diff <= 0) {
+        if (intervalID) { clearInterval(intervalID); intervalID = null; }
+        document.body.style.backgroundColor = "var(--bg-red)";
+      } else if (diff <= 5 * 60 * 1000) {
+        document.body.style.backgroundColor = "var(--bg-yellow)";
+      } else {
+        document.body.style.backgroundColor = "var(--bg-blue)";
+      }
+    }
+
+    // Enforce 4-letter teacher codes (letters only, auto-uppercase)
+    teacherInput.addEventListener("input", () => {
+      teacherInput.value = teacherInput.value.replace(/[^a-z]/gi, "").toUpperCase().slice(0, 4);
+    });
+
+    // Events
+    durationInput.addEventListener("input", calculateEnd);
+    startsInput.addEventListener("input", calculateEnd);
+
+    // Defaults
+    (function setStartsNow(){
+      const now = new Date();
+      startsInput.value = `${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+    })();
+    durationInput.value = "1 hour 45 minutes";
+    calculateEnd();
+  </script>
+</body>
+</html>

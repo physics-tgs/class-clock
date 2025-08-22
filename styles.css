@@ -1,0 +1,108 @@
+:root {
+  --bg-blue: #ADD8E6;
+  --bg-yellow: #FFFACD;
+  --bg-red: #F08080;  /* pastel red at end */
+  --text: #000;
+  --gap: 24px;
+}
+
+html, body { height: 100%; margin: 0; }
+
+body {
+  background-color: var(--bg-blue);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  align-items: flex-start;   /* sit near top */
+  justify-content: center;   /* center horizontally */
+  transition: background-color 0.5s ease;
+  padding: 40px 32px 32px;   /* extra top padding */
+}
+
+.wrap {
+  width: min(1600px, 96vw);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  align-items: stretch;
+}
+
+/* Top: Date + Big clock */
+#dateDisplay {
+  text-align: center;
+  font-size: clamp(28px, 2.2vw, 40px);
+  font-weight: 600;
+}
+
+#digitalTime {
+  font-size: clamp(100px, 12vw, 420px);
+  line-height: 1;
+  text-align: center;
+  letter-spacing: 2px;
+  font-weight: 700;
+  margin-top: -6px;
+}
+
+.rule {
+  border: 0;
+  border-top: 4px solid #000;
+  margin: 0;
+}
+
+/* Rows */
+.rows {
+  display: grid;
+  gap: 16px;
+  font-size: clamp(28px, 2.2vw, 40px);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* left | right */
+  align-items: center;
+  gap: 20px;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.cell.right { justify-content: flex-end; }
+
+label { font-weight: 700; white-space: nowrap; }
+
+select, input[type="text"] {
+  font-size: clamp(28px, 2.2vw, 40px);
+  padding: 10px 14px;
+  border: 2px solid #000;
+  border-radius: 10px;
+  background: #fff;
+  text-align: center;
+}
+
+/* Widths for nicer balance */
+/* Teacher: short 4-letter code */
+#teacher-input {
+  width: 160px;             /* change this if you need a different width */
+  text-transform: uppercase; /* show uppercase */
+}
+
+/* Duration: you can tweak this single value */
+#duration-input {
+  width: 420px;             /* ← make this bigger/smaller to taste */
+}
+
+#starts-input {
+  width: 200px; /* HH:MM */
+}
+
+#ends-display {
+  min-width: 180px;
+  text-align: right;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
