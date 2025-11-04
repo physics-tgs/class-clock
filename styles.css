@@ -1,11 +1,14 @@
 :root {
+  /* Background states used by your JS timer */
   --bg-blue: #ADD8E6;
   --bg-yellow: #FFFACD;
-  --bg-red: #F08080;  /* pastel red at end */
+  --bg-red: #F08080;
+
   --text: #000;
-  --gap: 24px;
+  --gap: 20px;
 }
 
+/* Page base */
 html, body { height: 100%; margin: 0; }
 
 body {
@@ -13,10 +16,10 @@ body {
   color: var(--text);
   font-family: Arial, Helvetica, sans-serif;
   display: flex;
-  align-items: flex-start;   /* sit near top */
-  justify-content: center;   /* center horizontally */
+  align-items: flex-start;
+  justify-content: center;
   transition: background-color 0.5s ease;
-  padding: 40px 32px 32px;   /* extra top padding */
+  padding: 40px 28px 28px;
 }
 
 .wrap {
@@ -27,7 +30,7 @@ body {
   align-items: stretch;
 }
 
-/* Top: Date + Big clock */
+/* Date + big digital clock */
 #dateDisplay {
   text-align: center;
   font-size: clamp(28px, 2.2vw, 40px);
@@ -49,60 +52,132 @@ body {
   margin: 0;
 }
 
-/* Rows */
+/* --- Minimal collapsibles --- */
+.collapsible {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;       /* no alternate background */
+}
+
+/* Hide default marker; create our own chevron */
+.collapsible > summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 2px;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 800;
+  font-size: clamp(22px, 1.8vw, 30px); /* base size; first section overridden below */
+}
+.collapsible > summary::-webkit-details-marker { display: none; }
+
+/* Chevron ">" */
+.collapsible > summary .chev::before {
+  content: "›";
+  display: inline-block;
+  transform: rotate(0deg);       /* points right */
+  transition: transform 0.15s ease;
+  font-size: 1.2em;
+  line-height: 1;
+}
+
+/* When open, rotate to point down */
+.collapsible[open] > summary .chev::before {
+  transform: rotate(90deg);
+}
+
+/* Title text next to chevron */
+.collapsible > summary .title {
+  font-weight: 800;
+}
+
+/* Content area: minimal spacing, slight indent under chevron */
+.collapsible > .rows,
+.collapsible > .notes-wrap {
+  padding: 8px 0 0 26px;
+}
+
+/* --- Forms layout inside sections --- */
 .rows {
   display: grid;
-  gap: 16px;
-  font-size: clamp(28px, 2.2vw, 40px);
+  gap: 14px;
+  font-size: clamp(24px, 2vw, 34px); /* base control size; first section overridden below */
 }
 
 .row {
   display: grid;
   grid-template-columns: 1fr 1fr; /* left | right */
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 .cell {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 .cell.right { justify-content: flex-end; }
 
 label { font-weight: 700; white-space: nowrap; }
 
-select, input[type="text"] {
-  font-size: clamp(28px, 2.2vw, 40px);
-  padding: 10px 14px;
+/* --- Compact controls (global) --- */
+input[type="text"], textarea {
+  font-size: clamp(48px, 1.4vw, 26px);   /* compact text */
+  padding: 6px 10px;                      /* tighter padding */
   border: 2px solid #000;
-  border-radius: 10px;
+  border-radius: 6px;
   background: #fff;
   text-align: center;
 }
 
-/* Widths for nicer balance */
-/* Teacher: short 4-letter code */
-#teacher-input {
-  width: 160px;             /* change this if you need a different width */
-  text-transform: uppercase; /* show uppercase */
-}
+/* Space-saving widths */
+#teacher-input { width: 120px; text-transform: uppercase; }
+#duration-input { width: 380px; }
+#starts-input   { width: 150px; }
+#ends-display   { min-width: 120px; text-align: right; }
 
-/* Duration: you can tweak this single value */
-#duration-input {
-  width: 420px;             /* ← make this bigger/smaller to taste */
-}
-
-#starts-input {
-  width: 200px; /* HH:MM */
-}
-
-#ends-display {
-  min-width: 180px;
-  text-align: right;
-}
-
+/* Monospace helper */
 .mono {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* Notes area */
+.notes-wrap { display: grid; }
+#notes {
+  width: 100%;
+  min-height: 2lh;
+  text-align: left;
+  resize: vertical;
+  line-height: 1.3;
+  padding: 12px 14px;   /* a tad roomier for typing */
+}
+
+/* --- Accessibility helper --- */
+.visually-hidden {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden; clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap; border: 0; padding: 0; margin: -1px;
+}
+
+/* --- SPECIFIC TWEAKS REQUESTED --- */
+/* Make the FIRST collapsible (Teacher & Times) bigger than the rest */
+#setup-section > summary {
+  font-size: clamp(28px, 2.4vw, 40px);  /* larger title line */
+  padding: 8px 2px;
+}
+
+#setup-section .rows {
+  font-size: clamp(54px, 2.2vw, 36px);  /* larger labels + inputs within this section */
+}
+
+#setup-section label { font-weight: 800; }
+
+/* Keep the second section a bit smaller than the first */
+#notes-section > summary {
+  font-size: clamp(22px, 1.8vw, 30px);
 }
