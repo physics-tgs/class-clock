@@ -14,52 +14,76 @@
 
     <hr class="rule" />
 
-    <div class="rows">
-      <!-- Row 1 -->
-      <div class="row">
-        <div class="cell">
-          <label for="teacher-input">Teacher:</label>
-          <input
-            type="text"
-            id="teacher-input"
-            placeholder="eg PHYS"
-            inputmode="latin"
-            maxlength="4"
-            aria-label="Teacher code (4 letters)"
-          />
+    <!-- Minimal collapsible: Teacher & Times -->
+    <details class="collapsible" id="setup-section" open>
+      <summary>
+        <span class="chev" aria-hidden="true"></span>
+        <span class="title"> </span>
+      </summary>
+
+      <div class="rows">
+        <div class="row">
+          <div class="cell">
+            <label for="teacher-input">Teacher:</label>
+            <input
+              type="text"
+              id="teacher-input"
+              placeholder="PHYS"
+              inputmode="latin"
+              maxlength="4"
+              aria-label="Teacher code (4 letters)"
+            />
+          </div>
+
+          <div class="cell right">
+            <label for="duration-input">Duration:</label>
+            <input
+              type="text"
+              id="duration-input"
+              placeholder="1 hour 45 minutes"
+              aria-label="Duration"
+            />
+          </div>
         </div>
 
-        <div class="cell right">
-          <label for="duration-input">Duration:</label>
-          <input
-            type="text"
-            id="duration-input"
-            placeholder="e.g., 1 hour 45 minutes"
-            aria-label="Duration"
-          />
+        <div class="row">
+          <div class="cell">
+            <label for="starts-input">Starts:</label>
+            <input
+              type="text"
+              id="starts-input"
+              placeholder="HH:MM"
+              inputmode="numeric"
+              class="mono"
+              aria-label="HH:MM"
+            />
+          </div>
+
+          <div class="cell right">
+            <label>Ends:</label>
+            <span id="ends-display" class="mono">--:--</span>
+          </div>
         </div>
       </div>
+    </details>
 
-      <!-- Row 2 -->
-      <div class="row">
-        <div class="cell">
-          <label for="starts-input">Starts:</label>
-          <input
-            type="text"
-            id="starts-input"
-            placeholder="HH:MM"
-            inputmode="numeric"
-            class="mono"
-            aria-label="Start time (HH:MM)"
-          />
-        </div>
+    <!-- Minimal collapsible: Additional instructions -->
+    <details class="collapsible" id="notes-section" closed>
+      <summary>
+        <span class="chev" aria-hidden="true"></span>
+        <span class="title"> </span>
+      </summary>
 
-        <div class="cell right">
-          <label>Ends:</label>
-          <span id="ends-display" class="mono">--:--</span>
-        </div>
+      <div class="notes-wrap">
+        <label for="notes" class="visually-hidden">Additional instructions</label>
+        <textarea
+          id="notes"
+          placeholder="Type any extra directions"
+          aria-label="Additional instructions"
+          rows="4"
+        ></textarea>
       </div>
-    </div>
+    </details>
   </div>
 
   <script>
@@ -146,7 +170,7 @@
       tickBackground(end);
     }
 
-    // Background color logic
+    // Background color logic (kept as before)
     function tickBackground(endTime) {
       const now = new Date();
       const diff = endTime - now;
