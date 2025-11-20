@@ -130,7 +130,6 @@ input[type="text"],
 textarea {
   font-size: clamp(48px, 1.4vw, 26px);
   padding: 6px 10px;
-
   border: none;                    /* ✔ remove black borders */
   border-radius: 10px;             /* ✔ rounded edge */
   background: transparent;         /* ✔ background follows body color via JS */
